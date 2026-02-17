@@ -1,22 +1,23 @@
 {
   "name": "bamboo-bank",
   "version": "1.0.0",
-  "description": "A sustainable, organic fintech platform for virtual banking and secure transactions.",
-  "main": "index.tsx",
+  "type": "module",
   "scripts": {
-    "build": "mkdir -p dist && cp -rv . dist/ --exclude=dist || true"
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
   },
   "dependencies": {
-    "react": "^19.2.3",
-    "react-dom": "^19.2.3",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
     "react-router-dom": "^7.1.0",
     "lucide-react": "^0.468.0",
-    "firebase": "^11.1.0"
+    "firebase": "^11.1.0",
+    "@google/genai": "latest"
   },
   "devDependencies": {
-    "typescript": "^5.0.0"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC"
+    "@vitejs/plugin-react": "^4.3.4",
+    "typescript": "^5.7.2",
+    "vite": "^6.0.5"
+  }
 }
