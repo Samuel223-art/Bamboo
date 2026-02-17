@@ -3,13 +3,15 @@
   "version": "1.0.0",
   "description": "A sustainable, organic fintech platform for virtual banking and secure transactions.",
   "main": "index.tsx",
+  "scripts": {
+    "build": "mkdir -p dist && cp -rv . dist/ --exclude=dist || true"
+  },
   "dependencies": {
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
     "react-router-dom": "^7.1.0",
     "lucide-react": "^0.468.0",
-    "firebase": "^11.1.0",
-    "@google/genai": "latest"
+    "firebase": "^11.1.0"
   },
   "devDependencies": {
     "typescript": "^5.0.0"
