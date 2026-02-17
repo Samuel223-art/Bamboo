@@ -36,6 +36,7 @@ interface GlobalContextType {
   recentRecipients: Contact[];
   activityData: ActivityData[];
   sendMoney: (amount: number, recipientEmail: string, note: string, pin: string) => Promise<boolean>;
+  searchUser: (identifier: string) => Promise<{name: string, email: string, avatarUrl: string} | null>;
   releaseDeal: (id: string) => Promise<void>;
   acceptDeal: (id: string) => Promise<void>;
   createDeal: (dealData: { title: string; amount: number; counterpartyEmail: string; description: string; task: string }) => Promise<boolean>;
@@ -213,7 +214,7 @@ export const GlobalProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       country: '',
       address: '',
       bankName: 'Bamboo Global Bank',
-      balance: 0.00, // Updated to 0.00 as requested
+      balance: 0.00,
       escrowBalance: 0,
       kycStatus: 'unverified'
     });
@@ -236,6 +237,22 @@ export const GlobalProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     if (!user) throw new Error("Not authenticated");
     const userRef = doc(db, 'users', user.id);
     await updateDoc(userRef, data);
+  };
+
+  const searchUser = async (identifier: string) => {
+    let q = query(collection(db, 'users'), where('email', '==', identifier));
+    let querySnapshot = await getDocs(q);
+    if (querySnapshot.empty) {
+      q = query(collection(db, 'users'), where('accountNumber', '==', identifier));
+      querySnapshot = await getDocs(q);
+    }
+    if (querySnapshot.empty) return null;
+    const data = querySnapshot.docs[0].data();
+    return { 
+      name: data.name, 
+      email: data.email, 
+      avatarUrl: data.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(data.name)}&background=166534&color=ffffff`
+    };
   };
 
   const sendMoney = async (amount: number, recipientEmail: string, note: string, pin: string): Promise<boolean> => {
@@ -269,7 +286,7 @@ export const GlobalProvider: React.FC<{ children: ReactNode }> = ({ children }) 
             status: 'completed',
             recipient: recipientDoc.data().name,
             recipientEmail: recipientDoc.data().email,
-            description: `Bamboo Send to ${recipientDoc.data().name}: ${note}`
+            description: `Sent to ${recipientDoc.data().name}: ${note}`
         });
 
         transaction.set(doc(collection(db, 'transactions')), {
@@ -280,7 +297,7 @@ export const GlobalProvider: React.FC<{ children: ReactNode }> = ({ children }) 
             status: 'completed',
             sender: user.name,
             senderEmail: user.email,
-            description: `Bamboo Deposit from ${user.name}: ${note}`
+            description: `Received from ${user.name}: ${note}`
         });
       });
       return true;
@@ -354,7 +371,7 @@ export const GlobalProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     <GlobalContext.Provider value={{ 
         theme, toggleTheme, user, loading, login, signup, logout, 
         transactions, deals, notifications, recentRecipients, activityData,
-        sendMoney, releaseDeal, acceptDeal, createDeal, 
+        sendMoney, searchUser, releaseDeal, acceptDeal, createDeal, 
         updateTransactionPin, changeUserPassword, updateProfile
     }}>
       {children}

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useGlobal } from '../context/GlobalState';
 import { Button, Input, Card, Modal } from '../components/UIComponents';
@@ -17,13 +16,13 @@ import {
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
 export const SendMoney = () => {
-  const { user, sendMoney, recentRecipients } = useGlobal();
+  const { user, sendMoney, searchUser, recentRecipients } = useGlobal();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   
   const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
   const [recipient, setRecipient] = useState('');
-  const [selectedContact, setSelectedContact] = useState<{name: string, email: string, avatar: string} | null>(null);
+  const [selectedContact, setSelectedContact] = useState<{name: string, email: string, avatarUrl: string} | null>(null);
   const [amount, setAmount] = useState('');
   const [note, setNote] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -41,41 +40,48 @@ export const SendMoney = () => {
 
     if (toParam) {
         setRecipient(toParam);
-        // Simulate selection/verification visuals
-        setSelectedContact({
-            name: toParam,
-            email: toParam,
-            avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(toParam)}&background=random`
-        });
-        
-        // If amount is also present, we can't fully auto-submit, but we can progress UI
-        if (amountParam) {
-            setAmount(amountParam);
-        }
-        setStep(2);
+        verifyAndProgress(toParam, amountParam);
     }
   }, [searchParams]);
 
-  const handleSelectContact = (contact: {name: string, email: string, avatar: string}) => {
-      setSelectedContact(contact);
+  const verifyAndProgress = async (id: string, amt?: string | null) => {
+    setIsLoading(true);
+    setError('');
+    try {
+        const found = await searchUser(id);
+        if (found) {
+            setSelectedContact(found);
+            setRecipient(found.email);
+            if (amt) setAmount(amt);
+            setStep(2);
+        } else {
+            setError('Recipient not found. Check the email or account number.');
+        }
+    } catch (e) {
+        setError('Error searching for recipient.');
+    } finally {
+        setIsLoading(false);
+    }
+  };
+
+  const handleSelectContact = (contact: any) => {
+      setSelectedContact({
+          name: contact.name,
+          email: contact.email,
+          avatarUrl: contact.avatar
+      });
       setRecipient(contact.email);
       setStep(2);
       setError('');
   };
 
-  const handleVerifyRecipient = (e: React.FormEvent) => {
+  const handleVerifyRecipient = async (e: React.FormEvent) => {
     e.preventDefault();
     if (recipient.length < 3) {
       setError('Please enter a valid email or account number');
       return;
     }
-    setSelectedContact({
-        name: recipient,
-        email: recipient,
-        avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(recipient)}&background=random`
-    });
-    setError('');
-    setStep(2);
+    await verifyAndProgress(recipient);
   };
 
   const handleAmountSubmit = (e: React.FormEvent) => {
@@ -115,7 +121,7 @@ export const SendMoney = () => {
             setShowPinModal(false);
             setStep(4);
         } else {
-            setError('Transaction failed. Recipient may not exist.');
+            setError('Transaction failed. Internal error.');
         }
     } catch (e: any) {
         setError(e.message || "Transaction failed");
@@ -141,11 +147,11 @@ export const SendMoney = () => {
                 <ArrowLeft size={20} className="text-gray-600 dark:text-gray-300" />
             </button>
         )}
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-            {step === 1 && 'Send Money'}
-            {step === 2 && 'Enter Amount'}
-            {step === 3 && 'Review Details'}
-            {step === 4 && 'Transfer Complete'}
+        <h1 className="text-xl font-black text-gray-900 dark:text-white uppercase tracking-tight">
+            {step === 1 && 'Recipient'}
+            {step === 2 && 'Amount'}
+            {step === 3 && 'Confirmation'}
+            {step === 4 && 'Success'}
         </h1>
       </div>
 
@@ -154,21 +160,21 @@ export const SendMoney = () => {
              <Card className="p-6">
                 <form onSubmit={handleVerifyRecipient} className="space-y-4">
                     <Input 
-                        label="To" 
-                        placeholder="Search name, email, or account number" 
+                        label="Send To" 
+                        placeholder="Email or Account Number" 
                         icon={<Search size={18} />}
                         value={recipient}
                         onChange={(e) => setRecipient(e.target.value)}
                         error={error}
                         autoFocus
                     />
-                    <Button type="submit" className="w-full">Continue</Button>
+                    <Button type="submit" className="w-full" isLoading={isLoading}>Continue</Button>
                 </form>
              </Card>
 
              {recentRecipients.length > 0 && (
                  <div>
-                     <h3 className="text-sm font-semibold text-gray-500 mb-3 px-1">Recent Recipients</h3>
+                     <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3 px-1">Recent Contacts</h3>
                      <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
                          {recentRecipients.map((contact, i) => (
                              <div 
@@ -177,12 +183,12 @@ export const SendMoney = () => {
                                 className="flex flex-col items-center gap-2 min-w-[80px] cursor-pointer group"
                              >
                                  <div className="relative">
-                                     <img src={contact.avatar} alt={contact.name} className="w-14 h-14 rounded-full border-2 border-transparent group-hover:border-brand-500 transition-colors object-cover" />
+                                     <img src={contact.avatar} alt={contact.name} className="w-12 h-12 rounded-full border-2 border-transparent group-hover:border-brand-500 transition-colors object-cover" />
                                      <div className="absolute bottom-0 right-0 w-4 h-4 bg-brand-500 rounded-full border-2 border-white flex items-center justify-center">
                                          <Clock size={8} className="text-white" />
                                      </div>
                                  </div>
-                                 <span className="text-xs font-medium text-center truncate w-full">{contact.name.split(' ')[0]}</span>
+                                 <span className="text-[10px] font-bold text-center truncate w-full text-gray-700 dark:text-gray-300">{contact.name.split(' ')[0]}</span>
                              </div>
                          ))}
                      </div>
@@ -190,10 +196,10 @@ export const SendMoney = () => {
              )}
              
              <div className="bg-blue-50 dark:bg-blue-900/10 p-4 rounded-xl flex gap-3 border border-blue-100 dark:border-blue-900/30">
-                 <ShieldCheck className="text-blue-600 shrink-0" />
+                 <ShieldCheck className="text-blue-600 shrink-0" size={20} />
                  <div>
-                     <h4 className="font-bold text-sm text-blue-900 dark:text-blue-300">Secure Transfer</h4>
-                     <p className="text-xs text-blue-700 dark:text-blue-400 mt-1">Transfers to Git. Broker accounts are instant, free, and protected by our escrow safety protocols.</p>
+                     <h4 className="font-black text-[10px] uppercase tracking-wider text-blue-900 dark:text-blue-300">Secure Transfer</h4>
+                     <p className="text-[10px] font-medium text-blue-700 dark:text-blue-400 mt-1">Direct bank-to-bank transfers are instant and protected.</p>
                  </div>
              </div>
         </div>
@@ -202,27 +208,27 @@ export const SendMoney = () => {
       {step === 2 && (
         <Card className="p-8">
             <div className="flex flex-col items-center mb-8">
-                <img src={selectedContact?.avatar} alt="" className="w-16 h-16 rounded-full mb-3 shadow-lg" />
-                <h3 className="text-lg font-bold">{selectedContact?.name}</h3>
-                <p className="text-sm text-gray-500">{selectedContact?.email}</p>
+                <img src={selectedContact?.avatarUrl} alt="" className="w-16 h-16 rounded-full mb-3 shadow-lg border-2 border-brand-100" />
+                <h3 className="text-lg font-black text-brand-900 dark:text-white uppercase tracking-tight">{selectedContact?.name}</h3>
+                <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">{selectedContact?.email}</p>
             </div>
 
             <form onSubmit={handleAmountSubmit} className="space-y-6">
                 <div className="relative">
                     <div className="flex items-center justify-center">
-                        <span className="text-4xl font-bold text-gray-400 mr-1">$</span>
+                        <span className="text-3xl font-black text-gray-300 mr-1">$</span>
                         <input 
                             type="number" 
-                            className="text-5xl font-bold text-gray-900 dark:text-white bg-transparent border-none focus:ring-0 w-48 text-center placeholder-gray-200" 
-                            placeholder="0"
+                            className="text-5xl font-black text-gray-900 dark:text-white bg-transparent border-none focus:ring-0 w-full text-center placeholder-gray-100 tracking-tighter" 
+                            placeholder="0.00"
                             value={amount}
                             onChange={(e) => setAmount(e.target.value)}
                             autoFocus
                         />
                     </div>
-                    <p className="text-center text-sm text-gray-500 mt-2">
-                        Balance: ${user.balance.toLocaleString()} 
-                        <button type="button" onClick={setMaxAmount} className="text-brand-600 font-bold ml-2 hover:underline">MAX</button>
+                    <p className="text-center text-[10px] font-black uppercase text-gray-400 mt-2 tracking-widest">
+                        Available: <span className="text-brand-600">${user.balance.toLocaleString()}</span>
+                        <button type="button" onClick={setMaxAmount} className="ml-2 text-brand-600 hover:underline">USE MAX</button>
                     </p>
                 </div>
 
@@ -232,7 +238,7 @@ export const SendMoney = () => {
                             key={val}
                             type="button"
                             onClick={() => addAmount(val)}
-                            className="px-4 py-1.5 rounded-full bg-gray-100 dark:bg-gray-800 text-sm font-medium hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+                            className="px-3 py-1 rounded-lg bg-gray-50 dark:bg-gray-800 text-[10px] font-black uppercase text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                         >
                             +${val}
                         </button>
@@ -240,15 +246,15 @@ export const SendMoney = () => {
                 </div>
 
                 <Input 
-                    placeholder="Add a note (optional)" 
+                    placeholder="Reference (Optional)" 
                     value={note}
                     onChange={e => setNote(e.target.value)}
                     className="text-center"
                 />
 
-                {error && <p className="text-red-500 text-center text-sm">{error}</p>}
+                {error && <p className="text-red-500 text-center text-[10px] font-bold uppercase">{error}</p>}
 
-                <Button type="submit" className="w-full h-12 text-lg">Review Transfer</Button>
+                <Button type="submit" className="w-full h-12 text-sm uppercase font-black tracking-widest bg-brand-700">Confirm Amount</Button>
             </form>
         </Card>
       )}
@@ -256,85 +262,85 @@ export const SendMoney = () => {
       {step === 3 && (
           <div className="space-y-6">
               <Card className="p-6 overflow-hidden relative">
-                  <div className="absolute top-0 left-0 w-full h-2 bg-brand-500"></div>
-                  <h3 className="text-gray-500 text-sm font-medium uppercase tracking-wide mb-6">Transaction Summary</h3>
+                  <div className="absolute top-0 left-0 w-full h-1.5 bg-brand-600"></div>
+                  <h3 className="text-gray-400 text-[9px] font-black uppercase tracking-[0.2em] mb-6">Review Details</h3>
                   
-                  <div className="flex items-center justify-between mb-6">
+                  <div className="flex items-center justify-between mb-8">
                       <div className="text-center">
-                          <img src={user.avatarUrl} alt="" className="w-12 h-12 rounded-full mx-auto mb-2 bg-gray-200" />
-                          <p className="text-sm font-bold">You</p>
+                          <img src={user.avatarUrl} alt="" className="w-10 h-10 rounded-full mx-auto mb-2 border-2 border-brand-50" />
+                          <p className="text-[10px] font-black uppercase text-gray-900 dark:text-white">You</p>
                       </div>
                       <div className="flex-1 px-4 flex flex-col items-center">
-                          <div className="w-full h-px bg-gray-200 dark:bg-gray-700 relative">
+                          <div className="w-full h-px bg-gray-100 dark:bg-gray-800 relative">
                               <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white dark:bg-gray-900 px-2">
-                                  <ArrowRight size={16} className="text-gray-400" />
+                                  <ArrowRight size={14} className="text-brand-500" />
                               </div>
                           </div>
                       </div>
                       <div className="text-center">
-                          <img src={selectedContact?.avatar} alt="" className="w-12 h-12 rounded-full mx-auto mb-2 bg-gray-200" />
-                          <p className="text-sm font-bold">{selectedContact?.name.split(' ')[0]}</p>
+                          <img src={selectedContact?.avatarUrl} alt="" className="w-10 h-10 rounded-full mx-auto mb-2 border-2 border-brand-50" />
+                          <p className="text-[10px] font-black uppercase text-gray-900 dark:text-white">{selectedContact?.name.split(' ')[0]}</p>
                       </div>
                   </div>
 
-                  <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 space-y-3">
+                  <div className="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-5 space-y-4">
                       <div className="flex justify-between items-center">
-                          <span className="text-gray-500">Amount</span>
-                          <span className="font-bold text-xl">${parseFloat(amount).toFixed(2)}</span>
+                          <span className="text-[10px] font-black text-gray-400 uppercase">Amount</span>
+                          <span className="font-black text-lg">${parseFloat(amount).toFixed(2)}</span>
                       </div>
                       <div className="flex justify-between items-center">
-                          <span className="text-gray-500">Fee</span>
-                          <span className="font-medium text-green-600">Free</span>
+                          <span className="text-[10px] font-black text-gray-400 uppercase">Transfer Fee</span>
+                          <span className="text-[10px] font-black text-emerald-500 uppercase">FREE</span>
                       </div>
                       {note && (
-                         <div className="flex justify-between items-center">
-                            <span className="text-gray-500">Note</span>
-                            <span className="font-medium text-gray-900 dark:text-gray-300">{note}</span>
+                         <div className="flex justify-between items-center border-t border-gray-100 dark:border-gray-800 pt-3">
+                            <span className="text-[10px] font-black text-gray-400 uppercase">Note</span>
+                            <span className="text-[10px] font-bold text-gray-700 dark:text-gray-300">{note}</span>
                          </div>
                       )}
-                      <div className="border-t border-gray-200 dark:border-gray-700 pt-3 flex justify-between items-center">
-                          <span className="font-bold text-gray-900 dark:text-white">Total</span>
-                          <span className="font-bold text-xl text-brand-600">${parseFloat(amount).toFixed(2)}</span>
+                      <div className="border-t-2 border-brand-100 dark:border-brand-800 pt-3 flex justify-between items-center">
+                          <span className="text-[10px] font-black text-brand-900 dark:text-white uppercase tracking-wider">Total Charge</span>
+                          <span className="font-black text-xl text-brand-700 dark:text-brand-400">${parseFloat(amount).toFixed(2)}</span>
                       </div>
                   </div>
               </Card>
 
-              {error && <p className="text-red-500 text-center text-sm">{error}</p>}
+              {error && <p className="text-red-500 text-center text-[10px] font-bold uppercase">{error}</p>}
 
-              <Button onClick={initiateTransfer} className="w-full h-14 text-lg shadow-xl shadow-brand-500/20">
-                  Confirm & Send
+              <Button onClick={initiateTransfer} className="w-full h-14 text-sm font-black uppercase tracking-widest shadow-xl shadow-brand-700/20 bg-brand-700">
+                  Authorize & Send
               </Button>
               
-              <button onClick={() => setStep(2)} className="w-full text-center text-sm text-gray-500 hover:text-gray-700 p-2">
-                  Cancel
+              <button onClick={() => setStep(2)} className="w-full text-center text-[9px] font-black text-gray-400 uppercase tracking-widest hover:text-gray-600 p-2">
+                  Edit Amount
               </button>
           </div>
       )}
 
       {step === 4 && (
         <div className="text-center py-10 animate-scale-up">
-            <div className="w-24 h-24 bg-green-100 dark:bg-green-900/30 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg shadow-green-500/20">
-                <CheckCircle2 size={48} />
+            <div className="w-20 h-20 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner">
+                <CheckCircle2 size={40} />
             </div>
-            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Transfer Successful!</h2>
-            <p className="text-gray-500 mb-8 max-w-xs mx-auto">
-                You successfully sent <span className="text-gray-900 dark:text-white font-bold">${parseFloat(amount).toFixed(2)}</span> to {selectedContact?.name}.
+            <h2 className="text-2xl font-black text-gray-900 dark:text-white uppercase tracking-tight mb-2">Transfer Sent!</h2>
+            <p className="text-[11px] font-medium text-gray-500 mb-8 max-w-xs mx-auto">
+                You sent <span className="text-brand-700 dark:text-brand-400 font-black">${parseFloat(amount).toFixed(2)}</span> to <span className="font-black uppercase">{selectedContact?.name}</span>.
             </p>
             
-            <Card className="p-4 mb-8 max-w-xs mx-auto bg-gray-50 dark:bg-gray-800/50">
-                <div className="flex justify-between text-sm mb-2">
-                    <span className="text-gray-500">Transaction ID</span>
-                    <span className="font-mono">#TRX-{Math.floor(Math.random()*100000)}</span>
+            <Card className="p-4 mb-8 max-w-xs mx-auto bg-gray-50 dark:bg-gray-800/50 border-brand-50">
+                <div className="flex justify-between items-center text-[9px] font-black uppercase tracking-wider mb-2">
+                    <span className="text-gray-400">Transaction ID</span>
+                    <span className="text-gray-700 dark:text-gray-300">#TXN-{Math.floor(Math.random()*100000)}</span>
                 </div>
-                <div className="flex justify-between text-sm">
-                    <span className="text-gray-500">Date</span>
-                    <span>{new Date().toLocaleDateString()}</span>
+                <div className="flex justify-between items-center text-[9px] font-black uppercase tracking-wider">
+                    <span className="text-gray-400">Timestamp</span>
+                    <span className="text-gray-700 dark:text-gray-300">{new Date().toLocaleTimeString()}</span>
                 </div>
             </Card>
 
             <div className="flex flex-col gap-3 max-w-xs mx-auto">
-                <Button onClick={() => navigate('/dashboard')} className="w-full">
-                    Return to Dashboard
+                <Button onClick={() => navigate('/dashboard')} className="w-full bg-brand-700 uppercase font-black text-[10px] tracking-widest">
+                    Dashboard
                 </Button>
                 <Button variant="outline" onClick={() => {
                     setStep(1);
@@ -342,35 +348,35 @@ export const SendMoney = () => {
                     setNote('');
                     setRecipient('');
                     setSelectedContact(null);
-                }}>
-                    Make Another Transfer
+                }} className="uppercase font-black text-[10px] tracking-widest">
+                    New Transfer
                 </Button>
             </div>
         </div>
       )}
 
       {/* PIN Verification Modal */}
-      <Modal isOpen={showPinModal} onClose={() => setShowPinModal(false)} title="Security Verification">
+      <Modal isOpen={showPinModal} onClose={() => setShowPinModal(false)} title="Security Check">
           <form onSubmit={handleFinalTransfer}>
               <div className="text-center mb-6">
-                <div className="w-12 h-12 bg-brand-100 text-brand-600 rounded-full flex items-center justify-center mx-auto mb-3">
-                    <Key size={24} />
+                <div className="w-10 h-10 bg-brand-50 text-brand-600 rounded-lg flex items-center justify-center mx-auto mb-3">
+                    <Key size={20} />
                 </div>
-                <p className="text-sm text-gray-500">Enter your 4-digit Transaction PIN to authorize this transfer.</p>
+                <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wide">Enter 4-digit PIN to confirm</p>
               </div>
               <Input 
                 type="password"
                 placeholder="0000"
                 maxLength={4}
-                className="text-center text-3xl tracking-[1em] font-mono h-16"
+                className="text-center text-3xl tracking-[0.5em] font-black h-16 bg-gray-50 border-brand-100"
                 value={pin}
                 onChange={e => setPin(e.target.value)}
                 autoFocus
               />
-              {error && <p className="text-red-500 text-sm text-center mt-2">{error}</p>}
+              {error && <p className="text-red-500 text-[10px] font-bold text-center mt-2 uppercase">{error}</p>}
               <div className="mt-6 flex gap-3">
-                  <Button type="button" variant="ghost" onClick={() => setShowPinModal(false)} className="flex-1">Cancel</Button>
-                  <Button type="submit" isLoading={isLoading} disabled={pin.length !== 4} className="flex-1">Verify & Pay</Button>
+                  <Button type="button" variant="ghost" onClick={() => setShowPinModal(false)} className="flex-1 uppercase text-[10px] font-black tracking-widest">Cancel</Button>
+                  <Button type="submit" isLoading={isLoading} disabled={pin.length !== 4} className="flex-1 bg-brand-700 uppercase text-[10px] font-black tracking-widest">Authorize</Button>
               </div>
           </form>
       </Modal>
