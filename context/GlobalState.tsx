@@ -213,7 +213,7 @@ export const GlobalProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       country: '',
       address: '',
       bankName: 'Bamboo Global Bank',
-      balance: 2500.00,
+      balance: 0.00, // Updated to 0.00 as requested
       escrowBalance: 0,
       kycStatus: 'unverified'
     });
