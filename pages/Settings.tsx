@@ -39,9 +39,9 @@ export const Settings = () => {
     if (!user) return null;
 
     const tabs: { id: SettingsTab; label: string; icon: React.ReactNode }[] = [
-        { id: 'general', label: 'General', icon: <Globe size={18} /> },
-        { id: 'security', label: 'Security', icon: <Shield size={18} /> },
-        { id: 'notifications', label: 'Notifications', icon: <Bell size={18} /> },
+        { id: 'general', label: 'General', icon: <Globe size={16} /> },
+        { id: 'security', label: 'Security', icon: <Shield size={16} /> },
+        { id: 'notifications', label: 'Notifications', icon: <Bell size={16} /> },
     ];
 
     const handlePinUpdate = async (e: React.FormEvent) => {
@@ -77,43 +77,23 @@ export const Settings = () => {
         }
     };
 
-    const getDeviceInfo = () => {
-        const ua = navigator.userAgent;
-        let os = "Unknown OS";
-        if (ua.indexOf("Win") !== -1) os = "Windows";
-        if (ua.indexOf("Mac") !== -1) os = "MacOS";
-        if (ua.indexOf("Linux") !== -1) os = "Linux";
-        if (ua.indexOf("Android") !== -1) os = "Android";
-        if (ua.indexOf("like Mac") !== -1) os = "iOS";
-
-        let browser = "Unknown Browser";
-        if (ua.indexOf("Chrome") !== -1) browser = "Chrome";
-        else if (ua.indexOf("Firefox") !== -1) browser = "Firefox";
-        else if (ua.indexOf("Safari") !== -1) browser = "Safari";
-        else if (ua.indexOf("Edge") !== -1) browser = "Edge";
-
-        return { os, browser };
-    };
-
-    const deviceInfo = getDeviceInfo();
-
     return (
-        <div className="max-w-5xl mx-auto space-y-6 animate-fade-in">
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Settings</h1>
+        <div className="max-w-4xl mx-auto space-y-4 animate-fade-in">
+            <h1 className="text-xl font-bold text-gray-900 dark:text-white">Settings</h1>
 
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
                 {/* Navigation Tabs */}
-                <Card className="h-fit p-2 lg:col-span-1">
+                <Card className="h-fit p-1.5 lg:col-span-1">
                     <div className="flex lg:flex-col gap-1 overflow-x-auto">
                         {tabs.map(tab => (
                             <button
                                 key={tab.id}
                                 onClick={() => setActiveTab(tab.id)}
                                 className={`
-                                    flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all whitespace-nowrap
+                                    flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-bold transition-all whitespace-nowrap
                                     ${activeTab === tab.id 
                                         ? 'bg-brand-50 text-brand-700 dark:bg-brand-900/20 dark:text-brand-400' 
-                                        : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'}
+                                        : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'}
                                 `}
                             >
                                 {tab.icon}
@@ -124,19 +104,18 @@ export const Settings = () => {
                 </Card>
 
                 {/* Content Area */}
-                <Card className="p-6 lg:p-8 lg:col-span-3 min-h-[500px]">
+                <Card className="p-4 lg:p-6 lg:col-span-3 min-h-[400px]">
                     {activeTab === 'general' && (
-                        <div className="space-y-8 animate-fade-in">
+                        <div className="space-y-6 animate-fade-in">
                             <div>
-                                <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Preferences</h2>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <h2 className="text-base font-bold text-gray-900 dark:text-white mb-3">Preferences</h2>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <Select 
                                         label="Display Language"
                                         options={[
                                             { value: 'en', label: 'English (US)' },
                                             { value: 'es', label: 'Español' },
                                             { value: 'fr', label: 'Français' },
-                                            { value: 'de', label: 'Deutsch' },
                                         ]}
                                         value={language}
                                         onChange={setLanguage}
@@ -146,7 +125,6 @@ export const Settings = () => {
                                         options={[
                                             { value: 'USD', label: 'USD - US Dollar' },
                                             { value: 'EUR', label: 'EUR - Euro' },
-                                            { value: 'GBP', label: 'GBP - British Pound' },
                                         ]}
                                         value={currency}
                                         onChange={setCurrency}
@@ -154,64 +132,52 @@ export const Settings = () => {
                                 </div>
                             </div>
                             
-                            <div className="pt-6 border-t border-gray-100 dark:border-gray-800">
-                                <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Trading Interface</h2>
+                            <div className="pt-4 border-t border-gray-100 dark:border-gray-800">
+                                <h2 className="text-base font-bold text-gray-900 dark:text-white mb-3">Trading Interface</h2>
                                 <Toggle 
                                     label="Pro Trading Mode" 
-                                    description="Enables advanced charting tools and denser information density."
+                                    description="Enables advanced charting tools."
                                     checked={tradingMode}
                                     onChange={setTradingMode}
                                 />
-                                <div className="mt-4">
-                                     <Select 
-                                        label="Timezone"
-                                        options={[
-                                            { value: 'UTC', label: 'UTC (Coordinated Universal Time)' },
-                                            { value: 'EST', label: 'EST (Eastern Standard Time)' },
-                                            { value: 'PST', label: 'PST (Pacific Standard Time)' },
-                                        ]}
-                                        value="UTC"
-                                        onChange={() => {}}
-                                    />
-                                </div>
                             </div>
                         </div>
                     )}
 
                     {activeTab === 'security' && (
-                        <div className="space-y-8 animate-fade-in">
+                        <div className="space-y-6 animate-fade-in">
                             <div>
-                                <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Login & Security</h2>
+                                <h2 className="text-base font-bold text-gray-900 dark:text-white mb-4">Login & Security</h2>
                                 
                                 {/* Transaction PIN */}
-                                <div className="mb-6 p-5 bg-gray-50 dark:bg-gray-800/50 rounded-xl border border-gray-100 dark:border-gray-800">
-                                    <h3 className="font-bold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
-                                        <Key size={18} className="text-brand-600" /> Transaction PIN
+                                <div className="mb-4 p-4 bg-gray-50 dark:bg-gray-800/50 rounded-xl border border-gray-100 dark:border-gray-800">
+                                    <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-1.5 flex items-center gap-2">
+                                        <Key size={14} className="text-brand-600" /> Transaction PIN
                                     </h3>
-                                    <p className="text-sm text-gray-500 mb-4">Required for sending money and releasing escrow.</p>
-                                    <form onSubmit={handlePinUpdate} className="flex flex-col sm:flex-row gap-3 items-end">
+                                    <p className="text-[10px] text-gray-500 mb-3">Required for sensitive transactions.</p>
+                                    <form onSubmit={handlePinUpdate} className="flex flex-col sm:flex-row gap-2 items-end">
                                         <Input 
                                             type="password" 
-                                            placeholder="Enter 4-digit PIN" 
+                                            placeholder="4-digit PIN" 
                                             maxLength={4} 
-                                            className="w-full sm:w-48 text-center tracking-widest"
+                                            className="w-full sm:w-32 text-center tracking-widest"
                                             value={pin}
                                             onChange={(e) => setPin(e.target.value)}
                                         />
-                                        <Button type="submit" isLoading={pinLoading} disabled={!pin}>
+                                        <Button type="submit" size="sm" isLoading={pinLoading} disabled={!pin}>
                                             {user.transactionPin ? 'Update PIN' : 'Set PIN'}
                                         </Button>
                                     </form>
-                                    {pinMessage && <p className="mt-2 text-sm text-brand-600 dark:text-brand-400">{pinMessage}</p>}
+                                    {pinMessage && <p className="mt-1.5 text-[10px] font-bold text-brand-600 dark:text-brand-400">{pinMessage}</p>}
                                 </div>
 
                                 {/* Change Password */}
-                                <div className="mb-6 p-5 border border-gray-100 dark:border-gray-800 rounded-xl">
-                                    <h3 className="font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                                        <Lock size={18} className="text-brand-600" /> Change Password
+                                <div className="mb-4 p-4 border border-gray-100 dark:border-gray-800 rounded-xl">
+                                    <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
+                                        <Lock size={14} className="text-brand-600" /> Change Password
                                     </h3>
-                                    <form onSubmit={handlePasswordUpdate} className="space-y-4">
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <form onSubmit={handlePasswordUpdate} className="space-y-3">
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                                             <Input 
                                                 type="password" 
                                                 label="New Password" 
@@ -225,79 +191,42 @@ export const Settings = () => {
                                                 onChange={(e) => setPassData({...passData, confirm: e.target.value})}
                                             />
                                         </div>
-                                        <Button type="submit" variant="outline" isLoading={passLoading} disabled={!passData.new}>Update Password</Button>
+                                        <Button type="submit" size="sm" variant="outline" isLoading={passLoading} disabled={!passData.new}>Update Password</Button>
                                     </form>
-                                    {passMessage && <p className="mt-2 text-sm text-brand-600 dark:text-brand-400">{passMessage}</p>}
+                                    {passMessage && <p className="mt-1.5 text-[10px] font-bold text-brand-600 dark:text-brand-400">{passMessage}</p>}
                                 </div>
                                 
-                                <div className="border border-gray-100 dark:border-gray-800 rounded-lg p-4">
+                                <div className="border border-gray-100 dark:border-gray-800 rounded-lg p-3">
                                     <Toggle 
                                         label="Two-Factor Authentication (2FA)" 
-                                        description="Secure your account with an extra layer of protection."
+                                        description="Extra layer of account protection."
                                         checked={twoFactor}
                                         onChange={setTwoFactor}
                                     />
-                                </div>
-                            </div>
-
-                            <div>
-                                <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Active Sessions</h2>
-                                <div className="space-y-3">
-                                    <div className="flex items-center justify-between p-4 bg-brand-50 dark:bg-brand-900/10 border border-brand-100 dark:border-brand-900/30 rounded-lg">
-                                        <div className="flex items-center gap-3">
-                                            <div className="w-10 h-10 rounded-full bg-brand-100 dark:bg-brand-800 text-brand-600 dark:text-brand-300 flex items-center justify-center">
-                                                <Monitor size={20} />
-                                            </div>
-                                            <div>
-                                                <p className="font-medium text-sm text-gray-900 dark:text-white">
-                                                    {deviceInfo.browser} on {deviceInfo.os}
-                                                </p>
-                                                <p className="text-xs text-gray-500">Your current session • {new Date().toLocaleDateString()}</p>
-                                            </div>
-                                        </div>
-                                        <span className="flex items-center gap-1 text-xs font-medium text-green-600 bg-green-50 dark:bg-green-900/20 px-2 py-1 rounded">
-                                            <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
-                                            Active Now
-                                        </span>
-                                    </div>
-                                    
-                                    {/* Mock Previous Session */}
-                                    <div className="flex items-center justify-between p-4 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-lg opacity-60 hover:opacity-100 transition-opacity">
-                                        <div className="flex items-center gap-3">
-                                            <div className="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-600 flex items-center justify-center">
-                                                <Smartphone size={20} />
-                                            </div>
-                                            <div>
-                                                <p className="font-medium text-sm text-gray-900 dark:text-white">Git. Broker App on iOS</p>
-                                                <p className="text-xs text-gray-500">New York, USA • 2 days ago</p>
-                                            </div>
-                                        </div>
-                                        <Button variant="ghost" size="sm" className="text-red-500 hover:text-red-600">Revoke</Button>
-                                    </div>
                                 </div>
                             </div>
                         </div>
                     )}
 
                     {activeTab === 'notifications' && (
-                         <div className="space-y-6 animate-fade-in">
-                            <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Notification Preferences</h2>
-                            <div className="space-y-4 divide-y divide-gray-100 dark:divide-gray-800">
+                         <div className="space-y-4 animate-fade-in">
+                            <h2 className="text-base font-bold text-gray-900 dark:text-white mb-2">Notification Preferences</h2>
+                            <div className="space-y-3 divide-y divide-gray-100 dark:divide-gray-800">
                                 <Toggle 
                                     label="Email Notifications" 
-                                    description="Receive transaction summaries and security alerts via email."
+                                    description="Transaction summaries via email."
                                     checked={emailNotif} 
                                     onChange={setEmailNotif} 
                                 />
                                 <Toggle 
                                     label="Push Notifications" 
-                                    description="Instant alerts for incoming funds and deal updates."
+                                    description="Instant alerts for funds."
                                     checked={pushNotif} 
                                     onChange={setPushNotif} 
                                 />
                                 <Toggle 
                                     label="Marketing & News" 
-                                    description="Stay updated with the latest broker news and features."
+                                    description="Stay updated with features."
                                     checked={marketing} 
                                     onChange={setMarketing} 
                                 />
