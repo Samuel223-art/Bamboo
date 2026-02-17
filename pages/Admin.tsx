@@ -21,7 +21,7 @@ export const Admin = () => {
             const userList = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as User));
             setUsers(userList);
         } catch (e) {
-            console.error("Failed to fetch users", e);
+            console.error("Falló la carga de usuarios", e);
         } finally {
             setIsLoading(false);
         }
@@ -35,15 +35,15 @@ export const Admin = () => {
 
   return (
     <div className="space-y-8 animate-fade-in">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Admin Overview</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Vista de Administrador</h1>
 
         {/* High Level Stats */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             {[
-                { label: 'Total Users', value: users.length.toString(), icon: <Users size={20} />, color: 'blue' },
-                { label: 'Total Volume', value: '$4.2M', icon: <Activity size={20} />, color: 'purple' },
-                { label: 'Commission Earned', value: '$125K', icon: <DollarSign size={20} />, color: 'emerald' },
-                { label: 'Active Disputes', value: '3', icon: <Ban size={20} />, color: 'red' },
+                { label: 'Usuarios Totales', value: users.length.toString(), icon: <Users size={20} />, color: 'blue' },
+                { label: 'Volumen Total', value: '$4.2M', icon: <Activity size={20} />, color: 'purple' },
+                { label: 'Comisiones', value: '$125K', icon: <DollarSign size={20} />, color: 'emerald' },
+                { label: 'Disputas Activas', value: '3', icon: <Ban size={20} />, color: 'red' },
             ].map((stat, i) => (
                 <Card key={i} className="p-6">
                     <div className="flex items-start justify-between">
@@ -62,20 +62,20 @@ export const Admin = () => {
         {/* User Management Table */}
         <Card className="overflow-hidden">
             <div className="p-6 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center">
-                <h3 className="text-lg font-bold text-gray-900 dark:text-white">User Management</h3>
+                <h3 className="text-lg font-bold text-gray-900 dark:text-white">Gestión de Usuarios</h3>
                 <div className="flex gap-2">
-                    <Button variant="outline" className="text-xs">Export CSV</Button>
+                    <Button variant="outline" className="text-xs">Exportar CSV</Button>
                 </div>
             </div>
             <div className="overflow-x-auto">
                 <table className="w-full text-sm text-left">
                     <thead className="bg-gray-50 dark:bg-gray-800 text-gray-500 uppercase">
                         <tr>
-                            <th className="px-6 py-4">User</th>
-                            <th className="px-6 py-4">Status</th>
-                            <th className="px-6 py-4">Account No.</th>
-                            <th className="px-6 py-4">Balance</th>
-                            <th className="px-6 py-4 text-right">Action</th>
+                            <th className="px-6 py-4">Usuario</th>
+                            <th className="px-6 py-4">Estado</th>
+                            <th className="px-6 py-4">No. Cuenta</th>
+                            <th className="px-6 py-4">Saldo</th>
+                            <th className="px-6 py-4 text-right">Acción</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
@@ -83,7 +83,7 @@ export const Admin = () => {
                             <tr>
                                 <td colSpan={5} className="px-6 py-8 text-center text-gray-500">
                                     <Loader2 className="animate-spin w-6 h-6 mx-auto mb-2" />
-                                    Loading users...
+                                    Cargando usuarios...
                                 </td>
                             </tr>
                         ) : users.length > 0 ? (
@@ -101,7 +101,7 @@ export const Admin = () => {
                                         </div>
                                     </td>
                                     <td className="px-6 py-4">
-                                        <StatusBadge status={u.kycStatus === 'verified' ? 'verified' : 'pending'} />
+                                        <StatusBadge status={u.kycStatus === 'verified' ? 'verificado' : 'pendiente'} />
                                     </td>
                                     <td className="px-6 py-4 font-mono text-gray-600 dark:text-gray-400">
                                         {u.accountNumber}
@@ -110,15 +110,15 @@ export const Admin = () => {
                                         ${u.balance.toLocaleString()}
                                     </td>
                                     <td className="px-6 py-4 text-right">
-                                        <button className="text-gray-400 hover:text-brand-600 mr-3 transition-colors">Edit</button>
-                                        <button className="text-red-400 hover:text-red-600 transition-colors">Suspend</button>
+                                        <button className="text-gray-400 hover:text-brand-600 mr-3 transition-colors">Editar</button>
+                                        <button className="text-red-400 hover:text-red-600 transition-colors">Suspender</button>
                                     </td>
                                 </tr>
                             ))
                         ) : (
                             <tr>
                                 <td colSpan={5} className="px-6 py-8 text-center text-gray-500">
-                                    No users found.
+                                    No se encontraron usuarios.
                                 </td>
                             </tr>
                         )}

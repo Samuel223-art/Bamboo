@@ -24,7 +24,7 @@ export const Auth = () => {
         else await signup(formData.email, formData.password, formData.name);
         navigate('/dashboard');
     } catch (err: any) {
-        setError(err.message || "Access denied.");
+        setError("Acceso denegado. Verifique sus credenciales.");
     } finally {
         setIsLoading(false);
     }
@@ -42,35 +42,35 @@ export const Auth = () => {
       <Card className="w-full max-w-md p-8 shadow-2xl border-brand-100">
         <div className="text-center mb-8">
           <h2 className="text-2xl font-bold text-brand-900 dark:text-white mb-2">
-            {isLogin ? 'Welcome back' : 'Join the Eco-System'}
+            {isLogin ? 'Bienvenido de nuevo' : 'Únete al Eco-Sistema'}
           </h2>
           <p className="text-brand-600 dark:text-brand-400">
-            {isLogin ? 'Enter your details to access your vault.' : 'Open your sustainable account today.'}
+            {isLogin ? 'Ingresa tus detalles para acceder a tu bóveda.' : 'Abre tu cuenta sostenible hoy mismo.'}
           </p>
         </div>
 
         {error && <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm mb-4 border border-red-100">{error}</div>}
 
         <form onSubmit={handleSubmit} className="space-y-5">
-          {!isLogin && <Input label="Full Identity Name" placeholder="e.g. Leo Green" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} required={!isLogin} />}
-          <Input label="Email Address" type="email" placeholder="name@domain.com" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} required />
+          {!isLogin && <Input label="Nombre de Identidad Completo" placeholder="ej. Leo Verde" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} required={!isLogin} />}
+          <Input label="Correo Electrónico" type="email" placeholder="nombre@dominio.com" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} required />
           <div>
-            <Input label="Access Key" type="password" placeholder="••••••••" value={formData.password} onChange={e => setFormData({...formData, password: e.target.value})} required />
-            {isLogin && <div className="flex justify-end mt-1"><a href="#" className="text-xs font-medium text-brand-600">Recovery needed?</a></div>}
+            <Input label="Clave de Acceso" type="password" placeholder="••••••••" value={formData.password} onChange={e => setFormData({...formData, password: e.target.value})} required />
+            {isLogin && <div className="flex justify-end mt-1"><a href="#" className="text-xs font-medium text-brand-600">¿Necesitas recuperar cuenta?</a></div>}
           </div>
           <Button type="submit" className="w-full py-4 rounded-xl" isLoading={isLoading}>
-            {isLogin ? 'Enter Vault' : 'Initialize Account'}
+            {isLogin ? 'Entrar a Bóveda' : 'Inicializar Cuenta'}
           </Button>
         </form>
 
         <div className="mt-8 text-center text-sm text-gray-500">
-          {isLogin ? "No account yet? " : "Already a member? "}
+          {isLogin ? "¿Aún no tienes cuenta? " : "¿Ya eres miembro? "}
           <Link to={`/auth?mode=${isLogin ? 'signup' : 'login'}`} className="font-bold text-brand-600 hover:text-brand-700 underline underline-offset-4">
-            {isLogin ? 'Join Bamboo' : 'Log in here'}
+            {isLogin ? 'Únete a Bamboo' : 'Inicia sesión aquí'}
           </Link>
         </div>
       </Card>
-      <p className="mt-8 text-xs text-brand-500 font-medium">© 2024 Bamboo Global Banking Group. All Rights Reserved.</p>
+      <p className="mt-8 text-xs text-brand-500 font-medium">© 2024 Bamboo Global Banking Group. Todos los derechos reservados.</p>
     </div>
   );
 };

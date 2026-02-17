@@ -67,13 +67,13 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
         </div>
 
         <div className="flex-1 overflow-y-auto p-4 space-y-1">
-          <SidebarLink to="/dashboard" icon={<LayoutDashboard size={20} />} label="Dashboard" onClick={() => setSidebarOpen(false)} />
-          <SidebarLink to="/wallet" icon={<Wallet size={20} />} label="My Wallet" onClick={() => setSidebarOpen(false)} />
-          <SidebarLink to="/transactions" icon={<History size={20} />} label="Transactions" onClick={() => setSidebarOpen(false)} />
-          <SidebarLink to="/broker" icon={<ShieldCheck size={20} />} label="Escrow Service" onClick={() => setSidebarOpen(false)} />
+          <SidebarLink to="/dashboard" icon={<LayoutDashboard size={20} />} label="Panel Control" onClick={() => setSidebarOpen(false)} />
+          <SidebarLink to="/wallet" icon={<Wallet size={20} />} label="Mi Billetera" onClick={() => setSidebarOpen(false)} />
+          <SidebarLink to="/transactions" icon={<History size={20} />} label="Transacciones" onClick={() => setSidebarOpen(false)} />
+          <SidebarLink to="/broker" icon={<ShieldCheck size={20} />} label="Servicio Escrow" onClick={() => setSidebarOpen(false)} />
           
           <div className="px-3 pt-6 pb-2">
-            <p className="text-[10px] font-bold text-brand-400 dark:text-brand-500 uppercase tracking-widest px-1">Quick Actions</p>
+            <p className="text-[10px] font-bold text-brand-400 dark:text-brand-500 uppercase tracking-widest px-1">Acciones Rápidas</p>
           </div>
           <div className="px-3 space-y-2">
             <Link 
@@ -82,7 +82,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
               className="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-brand-600 text-white font-bold text-sm shadow-md shadow-brand-600/20 hover:bg-brand-700 transition-all active:scale-95"
             >
               <Send size={18} />
-              <span>Send Money</span>
+              <span>Enviar Dinero</span>
             </Link>
             <Link 
               to="/broker?create=true" 
@@ -90,26 +90,26 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
               className="flex items-center gap-3 px-3 py-2.5 rounded-xl border border-brand-200 dark:border-brand-700 text-brand-700 dark:text-brand-300 font-bold text-sm hover:bg-brand-50 dark:hover:bg-brand-900/20 transition-all active:scale-95"
             >
               <Plus size={18} />
-              <span>Create Deal</span>
+              <span>Crear Trato</span>
             </Link>
           </div>
 
           <div className="pt-4 mt-4 border-t border-brand-50 dark:border-brand-800">
-             <SidebarLink to="/profile" icon={<User size={20} />} label="Profile" onClick={() => setSidebarOpen(false)} />
-             <SidebarLink to="/settings" icon={<Settings size={20} />} label="Settings" onClick={() => setSidebarOpen(false)} />
+             <SidebarLink to="/profile" icon={<User size={20} />} label="Perfil" onClick={() => setSidebarOpen(false)} />
+             <SidebarLink to="/settings" icon={<Settings size={20} />} label="Ajustes" onClick={() => setSidebarOpen(false)} />
           </div>
         </div>
 
         <div className="p-4 border-t border-brand-50 dark:border-brand-800">
           <div className="flex items-center gap-3 mb-4 p-2 rounded-xl bg-brand-50 dark:bg-brand-800/50">
-            <img src={user?.avatarUrl || "https://ui-avatars.com/api/?name=User"} alt="Profile" className="w-10 h-10 rounded-full border-2 border-brand-200" />
+            <img src={user?.avatarUrl || "https://ui-avatars.com/api/?name=User"} alt="Perfil" className="w-10 h-10 rounded-full border-2 border-brand-200" />
             <div className="flex-1 min-w-0">
               <p className="text-sm font-bold text-brand-900 dark:text-white truncate">{user?.name}</p>
-              <p className="text-xs text-brand-600 dark:text-brand-400 truncate">Bamboo Member</p>
+              <p className="text-xs text-brand-600 dark:text-brand-400 truncate">Miembro Bamboo</p>
             </div>
           </div>
           <button onClick={handleLogout} className="w-full flex items-center justify-center gap-2 px-3 py-2 text-sm font-semibold text-red-600 hover:bg-red-50 rounded-lg transition-colors">
-            <LogOut size={16} /><span>Sign Out</span>
+            <LogOut size={16} /><span>Cerrar Sesión</span>
           </button>
         </div>
       </aside>
@@ -120,7 +120,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
           <div className="hidden md:flex items-center max-w-md w-full ml-4">
              <div className="relative w-full">
                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-brand-400" size={18} />
-               <input type="text" placeholder="Search transactions..." className="w-full bg-brand-50 dark:bg-brand-800 border-none rounded-lg pl-10 pr-4 py-2 text-sm focus:ring-2 focus:ring-brand-500" />
+               <input type="text" placeholder="Buscar transacciones..." className="w-full bg-brand-50 dark:bg-brand-800 border-none rounded-lg pl-10 pr-4 py-2 text-sm focus:ring-2 focus:ring-brand-500" />
              </div>
           </div>
           <div className="flex items-center gap-2 lg:gap-4 ml-auto">

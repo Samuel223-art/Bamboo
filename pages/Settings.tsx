@@ -25,7 +25,7 @@ export const Settings = () => {
     const [twoFactor, setTwoFactor] = useState(true);
     const [tradingMode, setTradingMode] = useState(true);
     const [currency, setCurrency] = useState('USD');
-    const [language, setLanguage] = useState('en');
+    const [language, setLanguage] = useState('es');
 
     // Forms State
     const [pin, setPin] = useState('');
@@ -40,8 +40,8 @@ export const Settings = () => {
 
     const tabs: { id: SettingsTab; label: string; icon: React.ReactNode }[] = [
         { id: 'general', label: 'General', icon: <Globe size={16} /> },
-        { id: 'security', label: 'Security', icon: <Shield size={16} /> },
-        { id: 'notifications', label: 'Notifications', icon: <Bell size={16} /> },
+        { id: 'security', label: 'Seguridad', icon: <Shield size={16} /> },
+        { id: 'notifications', label: 'Notificaciones', icon: <Bell size={16} /> },
     ];
 
     const handlePinUpdate = async (e: React.FormEvent) => {
@@ -49,12 +49,12 @@ export const Settings = () => {
         setPinLoading(true);
         setPinMessage('');
         try {
-            if (pin.length < 4) throw new Error("PIN must be 4 digits");
+            if (pin.length < 4) throw new Error("El PIN debe tener 4 dígitos");
             await updateTransactionPin(pin);
-            setPinMessage("Transaction PIN updated successfully.");
+            setPinMessage("PIN de transacción actualizado con éxito.");
             setPin('');
         } catch (e: any) {
-            setPinMessage(e.message || "Failed to update PIN");
+            setPinMessage(e.message || "Error al actualizar el PIN");
         } finally {
             setPinLoading(false);
         }
@@ -65,13 +65,13 @@ export const Settings = () => {
         setPassLoading(true);
         setPassMessage('');
         try {
-            if (passData.new.length < 6) throw new Error("Password too short");
-            if (passData.new !== passData.confirm) throw new Error("Passwords do not match");
+            if (passData.new.length < 6) throw new Error("Contraseña demasiado corta");
+            if (passData.new !== passData.confirm) throw new Error("Las contraseñas no coinciden");
             await changeUserPassword(passData.new);
-            setPassMessage("Password changed successfully.");
+            setPassMessage("Contraseña cambiada con éxito.");
             setPassData({ new: '', confirm: '' });
         } catch (e: any) {
-            setPassMessage(e.message || "Failed to change password (requires recent login)");
+            setPassMessage(e.message || "Error al cambiar contraseña (requiere inicio reciente)");
         } finally {
             setPassLoading(false);
         }
@@ -79,7 +79,7 @@ export const Settings = () => {
 
     return (
         <div className="max-w-4xl mx-auto space-y-4 animate-fade-in">
-            <h1 className="text-xl font-bold text-gray-900 dark:text-white">Settings</h1>
+            <h1 className="text-xl font-bold text-gray-900 dark:text-white">Ajustes</h1>
 
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
                 {/* Navigation Tabs */}
@@ -108,10 +108,10 @@ export const Settings = () => {
                     {activeTab === 'general' && (
                         <div className="space-y-6 animate-fade-in">
                             <div>
-                                <h2 className="text-base font-bold text-gray-900 dark:text-white mb-3">Preferences</h2>
+                                <h2 className="text-base font-bold text-gray-900 dark:text-white mb-3">Preferencias</h2>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <Select 
-                                        label="Display Language"
+                                        label="Idioma del Sistema"
                                         options={[
                                             { value: 'en', label: 'English (US)' },
                                             { value: 'es', label: 'Español' },
@@ -121,9 +121,9 @@ export const Settings = () => {
                                         onChange={setLanguage}
                                     />
                                     <Select 
-                                        label="Default Currency"
+                                        label="Moneda Predeterminada"
                                         options={[
-                                            { value: 'USD', label: 'USD - US Dollar' },
+                                            { value: 'USD', label: 'USD - Dólar EE.UU.' },
                                             { value: 'EUR', label: 'EUR - Euro' },
                                         ]}
                                         value={currency}
@@ -133,10 +133,10 @@ export const Settings = () => {
                             </div>
                             
                             <div className="pt-4 border-t border-gray-100 dark:border-gray-800">
-                                <h2 className="text-base font-bold text-gray-900 dark:text-white mb-3">Trading Interface</h2>
+                                <h2 className="text-base font-bold text-gray-900 dark:text-white mb-3">Interfaz de Trading</h2>
                                 <Toggle 
-                                    label="Pro Trading Mode" 
-                                    description="Enables advanced charting tools."
+                                    label="Modo Trading Pro" 
+                                    description="Habilita herramientas de gráficos avanzadas."
                                     checked={tradingMode}
                                     onChange={setTradingMode}
                                 />
@@ -147,25 +147,25 @@ export const Settings = () => {
                     {activeTab === 'security' && (
                         <div className="space-y-6 animate-fade-in">
                             <div>
-                                <h2 className="text-base font-bold text-gray-900 dark:text-white mb-4">Login & Security</h2>
+                                <h2 className="text-base font-bold text-gray-900 dark:text-white mb-4">Inicio y Seguridad</h2>
                                 
                                 {/* Transaction PIN */}
                                 <div className="mb-4 p-4 bg-gray-50 dark:bg-gray-800/50 rounded-xl border border-gray-100 dark:border-gray-800">
                                     <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-1.5 flex items-center gap-2">
-                                        <Key size={14} className="text-brand-600" /> Transaction PIN
+                                        <Key size={14} className="text-brand-600" /> PIN de Transacción
                                     </h3>
-                                    <p className="text-[10px] text-gray-500 mb-3">Required for sensitive transactions.</p>
+                                    <p className="text-[10px] text-gray-500 mb-3">Obligatorio para transacciones sensibles.</p>
                                     <form onSubmit={handlePinUpdate} className="flex flex-col sm:flex-row gap-2 items-end">
                                         <Input 
                                             type="password" 
-                                            placeholder="4-digit PIN" 
+                                            placeholder="PIN de 4 dígitos" 
                                             maxLength={4} 
                                             className="w-full sm:w-32 text-center tracking-widest"
                                             value={pin}
                                             onChange={(e) => setPin(e.target.value)}
                                         />
                                         <Button type="submit" size="sm" isLoading={pinLoading} disabled={!pin}>
-                                            {user.transactionPin ? 'Update PIN' : 'Set PIN'}
+                                            {user.transactionPin ? 'Actualizar PIN' : 'Configurar PIN'}
                                         </Button>
                                     </form>
                                     {pinMessage && <p className="mt-1.5 text-[10px] font-bold text-brand-600 dark:text-brand-400">{pinMessage}</p>}
@@ -174,32 +174,32 @@ export const Settings = () => {
                                 {/* Change Password */}
                                 <div className="mb-4 p-4 border border-gray-100 dark:border-gray-800 rounded-xl">
                                     <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
-                                        <Lock size={14} className="text-brand-600" /> Change Password
+                                        <Lock size={14} className="text-brand-600" /> Cambiar Contraseña
                                     </h3>
                                     <form onSubmit={handlePasswordUpdate} className="space-y-3">
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                                             <Input 
                                                 type="password" 
-                                                label="New Password" 
+                                                label="Nueva Contraseña" 
                                                 value={passData.new}
                                                 onChange={(e) => setPassData({...passData, new: e.target.value})}
                                             />
                                             <Input 
                                                 type="password" 
-                                                label="Confirm Password" 
+                                                label="Confirmar Contraseña" 
                                                 value={passData.confirm}
                                                 onChange={(e) => setPassData({...passData, confirm: e.target.value})}
                                             />
                                         </div>
-                                        <Button type="submit" size="sm" variant="outline" isLoading={passLoading} disabled={!passData.new}>Update Password</Button>
+                                        <Button type="submit" size="sm" variant="outline" isLoading={passLoading} disabled={!passData.new}>Actualizar Contraseña</Button>
                                     </form>
                                     {passMessage && <p className="mt-1.5 text-[10px] font-bold text-brand-600 dark:text-brand-400">{passMessage}</p>}
                                 </div>
                                 
                                 <div className="border border-gray-100 dark:border-gray-800 rounded-lg p-3">
                                     <Toggle 
-                                        label="Two-Factor Authentication (2FA)" 
-                                        description="Extra layer of account protection."
+                                        label="Autenticación de Dos Factores (2FA)" 
+                                        description="Capa extra de protección para tu cuenta."
                                         checked={twoFactor}
                                         onChange={setTwoFactor}
                                     />
@@ -210,23 +210,23 @@ export const Settings = () => {
 
                     {activeTab === 'notifications' && (
                          <div className="space-y-4 animate-fade-in">
-                            <h2 className="text-base font-bold text-gray-900 dark:text-white mb-2">Notification Preferences</h2>
+                            <h2 className="text-base font-bold text-gray-900 dark:text-white mb-2">Preferencias de Notificación</h2>
                             <div className="space-y-3 divide-y divide-gray-100 dark:divide-gray-800">
                                 <Toggle 
-                                    label="Email Notifications" 
-                                    description="Transaction summaries via email."
+                                    label="Notificaciones por Email" 
+                                    description="Resumen de transacciones vía email."
                                     checked={emailNotif} 
                                     onChange={setEmailNotif} 
                                 />
                                 <Toggle 
-                                    label="Push Notifications" 
-                                    description="Instant alerts for funds."
+                                    label="Notificaciones Push" 
+                                    description="Alertas instantáneas de fondos."
                                     checked={pushNotif} 
                                     onChange={setPushNotif} 
                                 />
                                 <Toggle 
-                                    label="Marketing & News" 
-                                    description="Stay updated with features."
+                                    label="Noticias y Marketing" 
+                                    description="Mantente al día con nuevas funciones."
                                     checked={marketing} 
                                     onChange={setMarketing} 
                                 />

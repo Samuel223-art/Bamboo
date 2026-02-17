@@ -120,7 +120,7 @@ export const Select: React.FC<SelectProps> = ({ options, value, onChange, placeh
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [wrapperRef]);
 
-  const selectedLabel = options.find(o => o.value === value)?.label || placeholder || "Select";
+  const selectedLabel = options.find(o => o.value === value)?.label || placeholder || "Seleccionar";
 
   return (
     <div className={`relative w-full ${className}`} ref={wrapperRef}>
@@ -227,32 +227,61 @@ export const Modal: React.FC<{ isOpen: boolean; onClose: () => void; title: stri
 export const StatusBadge: React.FC<{ status: string }> = ({ status }) => {
   const styles: Record<string, string> = {
     completed: 'bg-green-50 text-green-700 dark:bg-green-900/20 dark:text-green-400',
+    completado: 'bg-green-50 text-green-700 dark:bg-green-900/20 dark:text-green-400',
     verified: 'bg-green-50 text-green-700 dark:bg-green-900/20 dark:text-green-400',
+    verificado: 'bg-green-50 text-green-700 dark:bg-green-900/20 dark:text-green-400',
     active: 'bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-400',
+    activo: 'bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-400',
     pending: 'bg-amber-50 text-amber-700 dark:bg-amber-900/20 dark:text-amber-400',
+    pendiente: 'bg-amber-50 text-amber-700 dark:bg-amber-900/20 dark:text-amber-400',
     failed: 'bg-red-50 text-red-700 dark:bg-red-900/20 dark:text-red-400',
+    fallido: 'bg-red-50 text-red-700 dark:bg-red-900/20 dark:text-red-400',
     cancelled: 'bg-gray-50 text-gray-700 dark:bg-gray-800 dark:text-gray-400',
+    cancelado: 'bg-gray-50 text-gray-700 dark:bg-gray-800 dark:text-gray-400',
     disputed: 'bg-orange-50 text-orange-700 dark:bg-orange-900/20 dark:text-orange-400',
+    en_disputa: 'bg-orange-50 text-orange-700 dark:bg-orange-900/20 dark:text-orange-400',
     unverified: 'bg-gray-50 text-gray-700 dark:bg-gray-800 dark:text-gray-400',
+    no_verificado: 'bg-gray-50 text-gray-700 dark:bg-gray-800 dark:text-gray-400',
   };
 
   const icons: Record<string, React.ReactNode> = {
     completed: <CheckCircle2 size={10} className="mr-1" />,
+    completado: <CheckCircle2 size={10} className="mr-1" />,
     verified: <CheckCircle2 size={10} className="mr-1" />,
+    verificado: <CheckCircle2 size={10} className="mr-1" />,
     active: <Clock size={10} className="mr-1" />,
+    activo: <Clock size={10} className="mr-1" />,
     pending: <Clock size={10} className="mr-1" />,
+    pendiente: <Clock size={10} className="mr-1" />,
     failed: <XCircle size={10} className="mr-1" />,
+    fallido: <XCircle size={10} className="mr-1" />,
     cancelled: <XCircle size={10} className="mr-1" />,
+    cancelado: <XCircle size={10} className="mr-1" />,
     disputed: <XCircle size={10} className="mr-1" />,
+    en_disputa: <XCircle size={10} className="mr-1" />,
     unverified: <XCircle size={10} className="mr-1" />,
+    no_verificado: <XCircle size={10} className="mr-1" />,
   };
 
   const normalizedStatus = status.toLowerCase();
+  
+  // Basic mapping for Spanish display
+  const statusMapping: Record<string, string> = {
+    completed: 'Completado',
+    verified: 'Verificado',
+    active: 'Activo',
+    pending: 'Pendiente',
+    failed: 'Fallido',
+    cancelled: 'Cancelado',
+    disputed: 'En Disputa',
+    unverified: 'No Verificado',
+    'pending_acceptance': 'Esperando Aceptación'
+  };
 
   return (
     <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider ${styles[normalizedStatus] || styles.pending}`}>
       {icons[normalizedStatus]}
-      {status}
+      {statusMapping[normalizedStatus] || status}
     </span>
   );
 };
@@ -288,7 +317,7 @@ export const TransactionRow: React.FC<{ transaction: Transaction }> = ({ transac
         </div>
         <div className="min-w-0">
           <p className="text-xs font-bold text-gray-900 dark:text-white truncate max-w-[140px] sm:max-w-none">{transaction.description}</p>
-          <p className="text-[9px] font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">{new Date(transaction.date).toLocaleDateString()}</p>
+          <p className="text-[9px] font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">{new Date(transaction.date).toLocaleDateString('es-ES')}</p>
         </div>
       </div>
       <div className="text-right shrink-0">

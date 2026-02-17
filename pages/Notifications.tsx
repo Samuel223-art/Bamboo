@@ -39,9 +39,9 @@ export const Notifications = () => {
     <div className="max-w-3xl mx-auto space-y-6 animate-fade-in">
         <div className="flex items-center justify-between">
             <h1 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
-                <Bell className="text-brand-600" /> Notifications
+                <Bell className="text-brand-600" /> Notificaciones
             </h1>
-            <Button variant="ghost" size="sm">Mark all as read</Button>
+            <Button variant="ghost" size="sm">Marcar todo como leído</Button>
         </div>
 
         {notifications.length > 0 ? (
@@ -59,7 +59,7 @@ export const Notifications = () => {
                                 <h3 className="font-bold text-gray-900 dark:text-white">{notif.title}</h3>
                                 <span className="text-xs text-gray-500 flex items-center gap-1">
                                     <Clock size={12} />
-                                    {new Date(notif.date).toLocaleDateString()}
+                                    {new Date(notif.date).toLocaleDateString('es-ES')}
                                 </span>
                             </div>
                             <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">{notif.message}</p>
@@ -72,9 +72,9 @@ export const Notifications = () => {
                 <div className="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4 text-gray-400">
                     <Bell size={24} />
                 </div>
-                <h3 className="text-lg font-bold text-gray-900 dark:text-white">No notifications</h3>
-                <p className="text-gray-500">You're all caught up! Recent activity will appear here.</p>
-                <Button className="mt-6" onClick={() => navigate('/dashboard')}>Go to Dashboard</Button>
+                <h3 className="text-lg font-bold text-gray-900 dark:text-white">Sin notificaciones</h3>
+                <p className="text-gray-500">¡Estás al día! Las actividades recientes aparecerán aquí.</p>
+                <Button className="mt-6" onClick={() => navigate('/dashboard')}>Ir al Panel</Button>
             </Card>
         )}
     </div>

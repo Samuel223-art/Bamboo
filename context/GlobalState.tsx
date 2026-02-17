@@ -104,9 +104,9 @@ export const GlobalProvider: React.FC<{ children: ReactNode }> = ({ children }) 
               date: tx.date,
               read: false,
               type: tx.status === 'failed' ? 'error' : 'success',
-              title: tx.status === 'failed' ? 'Transfer Failed' : 
-                     tx.type === 'deposit' ? 'Green Credit Received' : 
-                     tx.type === 'transfer' ? 'Funds Dispatched' : 'Notification',
+              title: tx.status === 'failed' ? 'Transferencia Fallida' : 
+                     tx.type === 'deposit' ? 'Crédito Recibido' : 
+                     tx.type === 'transfer' ? 'Fondos Enviados' : 'Notificación',
               message: tx.description
           }));
 
@@ -187,7 +187,7 @@ export const GlobalProvider: React.FC<{ children: ReactNode }> = ({ children }) 
             else expense += t.amount;
         });
         return {
-            day: dayDate.toLocaleDateString('en-US', { weekday: 'short' }),
+            day: dayDate.toLocaleDateString('es-ES', { weekday: 'short' }),
             date: dateStr,
             income,
             expense
@@ -216,25 +216,25 @@ export const GlobalProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       bankName: 'Bamboo Global Bank',
       balance: 0.00,
       escrowBalance: 0,
-      kycStatus: 'unverified'
+      kycStatus: 'no verificado'
     });
   };
 
   const logout = () => signOut(auth);
 
   const updateTransactionPin = async (pin: string) => {
-      if (!user) throw new Error("Not authenticated");
+      if (!user) throw new Error("No autenticado");
       const userRef = doc(db, 'users', user.id);
       await updateDoc(userRef, { transactionPin: pin });
   };
 
   const changeUserPassword = async (newPassword: string) => {
-      if (!auth.currentUser) throw new Error("Not authenticated");
+      if (!auth.currentUser) throw new Error("No autenticado");
       await updatePassword(auth.currentUser, newPassword);
   };
 
   const updateProfile = async (data: Partial<User>) => {
-    if (!user) throw new Error("Not authenticated");
+    if (!user) throw new Error("No autenticado");
     const userRef = doc(db, 'users', user.id);
     await updateDoc(userRef, data);
   };
@@ -257,13 +257,13 @@ export const GlobalProvider: React.FC<{ children: ReactNode }> = ({ children }) 
 
   const sendMoney = async (amount: number, recipientEmail: string, note: string, pin: string): Promise<boolean> => {
     if (!user) return false;
-    if (user.transactionPin && user.transactionPin !== pin) throw new Error("Invalid Transaction PIN");
+    if (user.transactionPin && user.transactionPin !== pin) throw new Error("PIN de Transacción inválido");
     try {
       await runTransaction(db, async (transaction) => {
         const senderRef = doc(db, 'users', user.id);
         const senderDoc = await transaction.get(senderRef);
-        if (!senderDoc.exists()) throw "Sender error";
-        if (senderDoc.data().balance < amount) throw "Insufficient funds";
+        if (!senderDoc.exists()) throw "Error del remitente";
+        if (senderDoc.data().balance < amount) throw "Fondos insuficientes";
 
         let q = query(collection(db, 'users'), where('email', '==', recipientEmail));
         let querySnapshot = await getDocs(q);
@@ -271,7 +271,7 @@ export const GlobalProvider: React.FC<{ children: ReactNode }> = ({ children }) 
              q = query(collection(db, 'users'), where('accountNumber', '==', recipientEmail));
              querySnapshot = await getDocs(q);
         }
-        if (querySnapshot.empty) throw "Recipient not found";
+        if (querySnapshot.empty) throw "Destinatario no encontrado";
         const recipientDoc = querySnapshot.docs[0];
         const recipientRef = doc(db, 'users', recipientDoc.id);
 
@@ -286,7 +286,7 @@ export const GlobalProvider: React.FC<{ children: ReactNode }> = ({ children }) 
             status: 'completed',
             recipient: recipientDoc.data().name,
             recipientEmail: recipientDoc.data().email,
-            description: `Sent to ${recipientDoc.data().name}: ${note}`
+            description: `Enviado a ${recipientDoc.data().name}: ${note}`
         });
 
         transaction.set(doc(collection(db, 'transactions')), {
@@ -297,7 +297,7 @@ export const GlobalProvider: React.FC<{ children: ReactNode }> = ({ children }) 
             status: 'completed',
             sender: user.name,
             senderEmail: user.email,
-            description: `Received from ${user.name}: ${note}`
+            description: `Recibido de ${user.name}: ${note}`
         });
       });
       return true;
@@ -309,13 +309,13 @@ export const GlobalProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     try {
         const q = query(collection(db, 'users'), where('email', '==', dealData.counterpartyEmail));
         const querySnapshot = await getDocs(q);
-        if (querySnapshot.empty) throw new Error("Counterparty not found.");
+        if (querySnapshot.empty) throw new Error("Contraparte no encontrada.");
         const counterpartyDoc = querySnapshot.docs[0];
 
         await runTransaction(db, async (transaction) => {
             const userRef = doc(db, 'users', user.id);
             const userDoc = await transaction.get(userRef);
-            if (userDoc.data()!.balance < dealData.amount) throw "Insufficient funds";
+            if (userDoc.data()!.balance < dealData.amount) throw "Fondos insuficientes";
             transaction.update(userRef, {
                 balance: userDoc.data()!.balance - dealData.amount,
                 escrowBalance: (userDoc.data()!.escrowBalance || 0) + dealData.amount
@@ -328,7 +328,7 @@ export const GlobalProvider: React.FC<{ children: ReactNode }> = ({ children }) 
             });
             transaction.set(doc(collection(db, 'transactions')), {
                 userId: user.id, type: 'transfer', amount: dealData.amount,
-                date: serverTimestamp(), status: 'completed', description: `Organic Escrow Hold: ${dealData.title}`
+                date: serverTimestamp(), status: 'completed', description: `Retención de Escrow: ${dealData.title}`
             });
         });
         return true;
@@ -350,7 +350,7 @@ export const GlobalProvider: React.FC<{ children: ReactNode }> = ({ children }) 
         const dealRef = doc(db, 'deals', id);
         const dealDoc = await transaction.get(dealRef);
         const dealData = dealDoc.data()!;
-        if (dealData.creatorId !== user.id) throw "Not authorized";
+        if (dealData.creatorId !== user.id) throw "No autorizado";
         const creatorRef = doc(db, 'users', user.id);
         const creatorDoc = await transaction.get(creatorRef);
         const counterpartyRef = doc(db, 'users', dealData.counterpartyId);
@@ -362,7 +362,7 @@ export const GlobalProvider: React.FC<{ children: ReactNode }> = ({ children }) 
         transaction.update(dealRef, { status: 'completed' });
         transaction.set(doc(collection(db, 'transactions')), {
             userId: dealData.counterpartyId, type: 'deposit', amount: netAmount,
-            date: serverTimestamp(), status: 'completed', sender: user.name, description: `Escrow Released: ${dealData.title}`
+            date: serverTimestamp(), status: 'completed', sender: user.name, description: `Escrow Liberado: ${dealData.title}`
         });
     });
   };
@@ -381,6 +381,6 @@ export const GlobalProvider: React.FC<{ children: ReactNode }> = ({ children }) 
 
 export const useGlobal = () => {
   const context = useContext(GlobalContext);
-  if (!context) throw new Error('useGlobal must be used within GlobalProvider');
+  if (!context) throw new Error('useGlobal debe ser usado dentro de GlobalProvider');
   return context;
 };

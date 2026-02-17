@@ -19,30 +19,30 @@ const WalletPage = () => {
     const { user, transactions } = useGlobal();
     return (
         <div className="space-y-6">
-            <h1 className="text-2xl font-bold dark:text-white">My Wallet</h1>
+            <h1 className="text-2xl font-bold dark:text-white">Mi Billetera</h1>
             <Card className="p-8 max-w-2xl bg-gradient-to-r from-brand-700 to-brand-900 text-white shadow-xl shadow-brand-900/20">
-                <p className="text-brand-200 mb-2">Account Number</p>
+                <p className="text-brand-200 mb-2">Número de Cuenta</p>
                 <div className="text-3xl font-mono mb-6 tracking-wider">{user?.accountNumber}</div>
                 <div className="flex justify-between text-sm text-brand-100">
                     <div>
-                        <p className="text-brand-300 text-xs uppercase mb-1">Bank Name</p>
+                        <p className="text-brand-300 text-xs uppercase mb-1">Nombre del Banco</p>
                         <p>{user?.bankName}</p>
                     </div>
                     <div>
-                        <p className="text-brand-300 text-xs uppercase mb-1">Account Holder</p>
+                        <p className="text-brand-300 text-xs uppercase mb-1">Titular</p>
                         <p>{user?.name}</p>
                     </div>
                     <div>
-                        <p className="text-brand-300 text-xs uppercase mb-1">Status</p>
-                        <span className="text-emerald-400">Active</span>
+                        <p className="text-brand-300 text-xs uppercase mb-1">Estado</p>
+                        <span className="text-emerald-400">Activa</span>
                     </div>
                 </div>
             </Card>
-            <h3 className="text-lg font-bold mt-8 dark:text-white">Recent Activity</h3>
+            <h3 className="text-lg font-bold mt-8 dark:text-white">Actividad Reciente</h3>
             <Card className="p-4">
                  {transactions.length > 0 ? (
                     transactions.map(t => <TransactionRow key={t.id} transaction={t} />)
-                 ) : <p className="text-center py-10 text-gray-500">No transactions yet.</p>}
+                 ) : <p className="text-center py-10 text-gray-500">Aún no hay transacciones.</p>}
             </Card>
         </div>
     )
@@ -52,12 +52,12 @@ const TransactionsPage = () => {
     const { transactions } = useGlobal();
     return (
         <div className="space-y-6">
-            <h1 className="text-2xl font-bold dark:text-white">Transaction History</h1>
+            <h1 className="text-2xl font-bold dark:text-white">Historial de Transacciones</h1>
             <Card className="p-4">
                 {transactions.length > 0 ? (
                     transactions.map(t => <TransactionRow key={t.id} transaction={t} />)
                 ) : (
-                    <p className="text-gray-500 text-center py-4">No transactions found.</p>
+                    <p className="text-gray-500 text-center py-4">No se encontraron transacciones.</p>
                 )}
             </Card>
         </div>
